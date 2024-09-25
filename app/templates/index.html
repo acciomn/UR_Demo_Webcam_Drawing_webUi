@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR Drawing Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/icon.ico') }}">
+</head>
+<body>
+    <h1>UR Drawing Demo</h1>
+    <div id="content-container">
+        <div id="media-container">
+            <h2>Video</h2>
+            <div id="video-container">
+                <img src="{{ url_for('camera.video_feed') }}" id="video" width="640" height="480">
+                <div id="camera-button-container">
+                    <button id="start-button">Start Camera</button>
+                    <button id="stop-button">Stop Camera</button>
+                    <button id="capture-button">Capture Image</button>
+                    <button id="exit-button">Exit</button>
+                </div> <!-- Close #camera-button-container -->
+            </div> <!-- Close #video-container -->
+            <h2>Image</h2>
+            <div id="captured-image-container">
+                <img id="captured-image" src="" alt="Captured Image">
+                <div id="save-path"></div>
+                <div id="image-button-container">
+                    <button id="load-button">Load Image</button>
+                    <input type="file" id="image-file" accept="image/*" style="display: none;">
+                </div> <!-- Close #image-button-container -->
+            </div> <!-- Close #captured-image-container -->
+        </div> <!-- Close #media-container -->
+    </div> <!-- Close #content-container -->
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

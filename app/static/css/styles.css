@@ -1,0 +1,103 @@
+body {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent scroll bar */
+}
+
+h1 {
+    color: #343a40;
+    margin-top: 20px;
+}
+
+#content-container {
+    display: flex;
+    flex-direction: column; /* Change to column layout */
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+    width: 100%; /* Ensure it takes full width */
+    height: 100vh; /* Ensure it takes full height */
+    box-sizing: border-box;
+}
+
+#media-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    max-width: 100vw; /* Ensure it does not exceed the viewport width */
+    max-height: 100vh; /* Ensure it does not exceed the viewport height */
+    width: 80vw; /* Set a fixed width */
+    height: 60vh; /* Set a fixed height */
+    overflow: hidden; /* Prevent internal scroll */
+}
+
+#video-container, #captured-image-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    flex: 1 1 45%; /* Allow both containers to take up to 45% of the width */
+    box-sizing: border-box;
+    margin: 10px;
+    max-width: 45vw;
+    max-height: 45vh;
+}
+
+#image-button-container {
+    margin-top: auto; /* Pushes the load button to the bottom */
+}
+
+#video {
+    width: 100%; /* Set to 100% of the container width */
+    height: auto; /* Maintain aspect ratio */
+    background-color: black; /* Add a background color to maintain size when video is off */
+    display: block; /* Ensure it remains a block element */
+    border: 2px solid #343a40; /* Add a border */
+    border-radius: 8px; /* Add rounded corners */
+}
+
+#captured-image {
+    display: block;
+    max-width: 100%; /* Ensure the image fits within its container */
+    height: auto; /* Maintain aspect ratio */
+    margin-top: 10px;
+    border: 2px solid #343a40;
+    border-radius: 8px; /* Add rounded corners */
+}
+
+#camera-button-container {
+    display: block; /* Change to block layout */
+    margin: 20px;
+    position: fixed; /* Fix the position */
+    bottom: 20px; /* Position it at the bottom */
+    width: 100%; /* Full width */
+    background-color: #f8f9fa; /* Background color to make it stand out */
+    padding: 10px 0; /* Padding for better appearance */
+    text-align: center; /* Center align buttons */
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    max-width: 200px; /* Set a maximum width for buttons */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
