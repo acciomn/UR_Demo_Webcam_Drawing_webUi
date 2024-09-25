@@ -93,11 +93,15 @@ def load_image():
 def exit_app():
     try:
         logging.info("Exit route called")
-        stop_camera()
-        func = request.environ.get('werkzeug.server.shutdown')
-        if func is None:
-            raise RuntimeError('Not running with the Werkzeug Server')
-        func()
+        global_camera.stop()
+        os._exit(0) # Force quit the application
         return "Application exited successfully."
     except Exception as e:
         return f"Error exiting app: {str(e)}"
+
+"""
+func = request.environ.get('werkzeug.server.shutdown')
+        if func is None:
+            raise RuntimeError('Not running with the Werkzeug Server')
+        func()
+"""
