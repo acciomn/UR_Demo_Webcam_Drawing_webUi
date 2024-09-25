@@ -11,7 +11,7 @@
     <h1>UR Drawing Demo</h1>
     <div id="content-container">
         <div id="media-container">
-            <div id="video-container">
+            <div id="camera-container">
                 <img src="{{ url_for('camera.video_feed') }}" id="video" width="640" height="480">
                 <div id="camera-button-container">
                     <button id="start-button">Start Camera</button>
@@ -19,13 +19,15 @@
                     <button id="capture-button">Capture Image</button>
                     <button id="exit-button">Exit</button>
                 </div> <!-- Close #camera-button-container -->
-            </div> <!-- Close #video-container -->
+            </div> <!-- Close #camera-container -->
             <div id="captured-image-container">
                 <img id="captured-image" src="" alt="Captured Image">
                 <div id="save-path"></div>
                 <div id="image-button-container">
                     <button id="load-button">Load Image</button>
                     <input type="file" id="image-file" accept="image/*" style="display: none;">
+                    <button id="save-button">Save</button>
+                    <button id="clear-button">Clear</button>
                 </div> <!-- Close #image-button-container -->
             </div> <!-- Close #captured-image-container -->
         </div> <!-- Close #media-container -->

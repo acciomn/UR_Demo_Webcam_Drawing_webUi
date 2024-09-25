@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     capturedImage.src = data.image_url;
                     capturedImage.style.display = 'block';
                     savePath.textContent = `Image saved at: ${data.image_url}`;
+                    loadButton.style.display = 'block'; // Ensure load button remains visible
                 } else {
                     console.error('Error:', data.status);
                 }
