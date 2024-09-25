@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const video = document.getElementById('video');
     const capturedImage = document.getElementById('captured-image');
     const savePath = document.getElementById('save-path');
+    const loadButton = document.getElementById('load-button');
+    const imageFile = document.getElementById('image-file');
 
     startButton.addEventListener('click', function() {
         fetch('/start_camera', { method: 'POST' })
@@ -38,29 +40,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     capturedImage.style.display = 'block';
                     savePath.textContent = `Image saved at: ${data.image_url}`;
                 } else {
-                console.error('Error:', data.status);
+                    console.error('Error:', data.status);
                 }
             })
             .catch(error => console.error('Error:', error));
     });
 
     exitButton.addEventListener('click', function() {
-    fetch('/exit', { method: 'POST' })
-        .then(response => response.text())
-        .then(data => {
-            video.style.visibility = 'hidden'; // Hide video but keep its space
-            capturedImage.src = '';
-            savePath.textContent = '';
-            console.log(data);
-        })
-        .catch(error => console.error('Error:', error));
+        fetch('/exit', { method: 'POST' })
+            .then(response => response.text())
+            .then(data => {
+                video.style.visibility = 'hidden'; // Hide video but keep its space
+                capturedImage.src = '';
+                savePath.textContent = '';
+                console.log(data);
+            })
+            .catch(error => console.error('Error:', error));
     });
 
-    getElementById('load-button').addEventListener('click', function() {
-    getElementById('image-file').click();
+    loadButton.addEventListener('click', function() {
+        imageFile.click();
     });
 
-    getElementById('image-file').addEventListener('change', function(event) {
+    imageFile.addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file) {
             const formData = new FormData();
@@ -73,8 +75,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'Image loaded successfully') {
-                    document.getElementById('captured-image').src = data.image_url;
-                    document.getElementById('captured-image').style.display = 'block';
+                    capturedImage.src = data.image_url;
+                    capturedImage.style.display = 'block';
                 }
             })
             .catch(error => console.error('Error:', error));

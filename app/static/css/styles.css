@@ -55,6 +55,7 @@ h1 {
 
 #image-button-container {
     margin-top: auto; /* Pushes the load button to the bottom */
+    position: relative; /* Ensure the button is positioned relative to its container */
 }
 
 #video {
@@ -100,4 +101,15 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+.load-button {
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    left: 10px; /* Adjust as needed */
+    z-index: 10; /* Ensure the button is above the image */
+    background-color: #fff; /* Button background color */
+    border: 1px solid #ccc; /* Button border */
+    padding: 5px 10px; /* Button padding */
+    cursor: pointer; /* Pointer cursor on hover */
 }
