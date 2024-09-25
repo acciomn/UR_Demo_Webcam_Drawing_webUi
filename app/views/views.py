@@ -80,7 +80,25 @@ def display_image(filename):
 def exit_app():
     try:
         logging.info("Exit route called")
+        # Clear the captured image
+        save_dir = os.path.abspath("app/static/images")
+        for filename in os.listdir(save_dir):
+            file_path = os.path.join(save_dir, filename)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
         global_camera.stop()
-        os._exit(0)  # quit the application
+        os._exit(0)  # force quit the application
     except Exception as e:
         return f"Error exiting app: {str(e)}"
+
+@bp.route('/clear_images', methods=['POST'])
+def clear_images():
+    try:
+        save_dir = os.path.abspath("app/static/images")
+        for filename in os.listdir(save_dir):
+            file_path = os.path.join(save_dir, filename)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+        return jsonify({'status': 'All images cleared successfully'})
+    except Exception as e:
+        return jsonify({'status': f'Error clearing images: {str(e)}'})

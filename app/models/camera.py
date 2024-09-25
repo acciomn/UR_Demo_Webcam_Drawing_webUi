@@ -36,8 +36,10 @@ class Camera:
             if self.cap is not None:
                 ret, frame = self.cap.read()
                 if ret:
+                    # Flip the frame horizontally
+                    flipped_frame = cv2.flip(frame, 1)
                     # Convert the frame to a PIL Image
-                    image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                    image = Image.fromarray(cv2.cvtColor(flipped_frame, cv2.COLOR_BGR2RGB))
                     return image
                 else:
                     raise RuntimeError("Failed to capture image.")
