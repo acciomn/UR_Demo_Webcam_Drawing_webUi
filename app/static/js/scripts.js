@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.status === 'Camera started') {
                     video.style.visibility = 'visible'; // Make video visible
+                    capturedImage.style.display = 'none'; // Hide captured image
+                    video.src = '/video_feed'; // Reset video feed source
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -31,20 +33,22 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error:', error));
     });
 
-    captureButton.addEventListener('click', function() {
-        fetch('/capture_image', { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'Image captured successfully') {
-                    capturedImage.src = data.image_url;
-                    capturedImage.style.display = 'block';
-                    savePath.textContent = `Image saved at: ${data.image_url}`;
-                    loadButton.style.display = 'block'; // Ensure load button remains visible
-                } else {
-                    console.error('Error:', data.status);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+    captureButton.addEventListener('click', async function() {
+        try {
+            const response = await fetch('/capture_image', { method: 'POST' });
+            const result = await response.json();
+            if (result.status === 'Image captured successfully') {
+                // Stop the camera
+                await fetch('/stop_camera', { method: 'POST' });
+
+                // Update the video container with the captured image
+                video.src = result.image_url;
+            } else {
+                console.error(result.status);
+            }
+        } catch (error) {
+            console.error('Error capturing image:', error);
+        }
     });
 
     exitButton.addEventListener('click', function() {

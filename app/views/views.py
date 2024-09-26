@@ -5,7 +5,7 @@ from flask import Blueprint, Response, jsonify, render_template, url_for, reques
 from app.controllers.camera_controller import gen, global_camera
 import os, time
 from PIL import Image
-from app.utils.image_processing import convert_to_cartoon
+# from app.utils.image_processing import convert_to_cartoon
 
 bp = Blueprint('camera', __name__)
 
@@ -104,7 +104,7 @@ def clear_images():
     except Exception as e:
         return jsonify({'status': f'Error clearing images: {str(e)}'})
 
-@bp.route('/convert_to_cartoon', methods=['POST'])
+"""@bp.route('/convert_to_cartoon', methods=['POST'])
 def convert_to_cartoon_route():
     try:
         image_path = request.form['image_path']
@@ -112,4 +112,4 @@ def convert_to_cartoon_route():
         image_url = url_for('static', filename=f'images/{os.path.basename(cartoon_image_path)}')
         return jsonify({'status': 'Image converted successfully', 'image_url': image_url})
     except Exception as e:
-        return jsonify({'status': f'Error converting image: {str(e)}'})
+        return jsonify({'status': f'Error converting image: {str(e)}'})"""
