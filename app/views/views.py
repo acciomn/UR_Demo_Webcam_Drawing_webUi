@@ -81,12 +81,6 @@ def display_image(filename):
 def exit_app():
     try:
         logging.info("Exit route called")
-        # Clear the captured image
-        save_dir = os.path.abspath("app/static/images")
-        for filename in os.listdir(save_dir):
-            file_path = os.path.join(save_dir, filename)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
         global_camera.stop()
         os._exit(0)  # force quit the application
     except Exception as e:

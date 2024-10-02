@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const stopButton = document.getElementById('stop-button');
     const captureButton = document.getElementById('capture-button');
     const exitButton = document.getElementById('exit-button');
+    const clearButton = document.getElementById('clear-button');
     const video = document.getElementById('video');
     const capturedImage = document.getElementById('captured-image');
     const savePath = document.getElementById('save-path');
@@ -61,6 +62,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(data);
             })
             .catch(error => console.error('Error:', error));
+    });
+
+    clearButton.addEventListener('click', function() {
+        fetch('/clear_images', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'All images cleared successfully') {
+                alert('All images have been cleared.');
+                // Optionally, you can add code here to update the UI
+            } else {
+                alert('Error clearing images: ' + data.status);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while clearing images.');
+        });
     });
 
     loadButton.addEventListener('click', function() {
