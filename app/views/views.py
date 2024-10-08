@@ -4,6 +4,7 @@ import logging
 from flask import Blueprint, Response, jsonify, render_template, url_for, request, send_from_directory
 from app.controllers.camera_controller import gen, global_camera
 import os, time
+from app.utils.image_processing import process_image
 from PIL import Image
 # from app.utils.image_processing import convert_to_cartoon
 
@@ -113,3 +114,14 @@ def convert_to_cartoon_route():
         return jsonify({'status': 'Image converted successfully', 'image_url': image_url})
     except Exception as e:
         return jsonify({'status': f'Error converting image: {str(e)}'})"""
+
+@bp.route('/convert_to_svg', methods=['POST'])
+def convert_to_svg_route():
+    try:
+        image_path = request.form['image_path']
+        svg_path = os.path.splitext(image_path)[0] + '.svg'
+        process_image(image_path, svg_path)
+        svg_url = url_for('static', filename=f'images/{os.path.basename(svg_path)}')
+        return jsonify({'status': 'Image converted to SVG successfully', 'svg_url': svg_url})
+    except Exception as e:
+        return jsonify({'status': f'Error converting image to SVG: {str(e)}'})

@@ -1,45 +1,55 @@
-"""import torch
-from torchvision import transforms
-from PIL import Image
+import cv2
+import numpy as np
+import svgwrite
 
-# Load your pre-trained model here
-model = torch.load('path_to_your_model.pth')
-model.eval()
+def remove_background(image_path):
+    # Read the image
+    image = cv2.imread(image_path)
+    if image is None:
+        raise FileNotFoundError(f"Image not found at path: {image_path}")
 
-import torch
-from torchvision import transforms
-from PIL import Image
+    # Convert to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-# Load your pre-trained model here
-model = torch.load('path_to_your_model.pth')
-model.eval()
+    # Apply a binary threshold to get a binary image
+    _, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
 
+    # Find contours
+    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-def convert_to_cartoon(image_path):
-    # Open the image using PIL
-    image = Image.open(image_path)
+    # Create a mask for the foreground
+    mask = np.zeros_like(image)
+    cv2.drawContours(mask, contours, -1, (255, 255, 255), thickness=cv2.FILLED)
 
-    # Define the transformation
-    transform = transforms.Compose([
-        transforms.Resize((256, 256)),
-        transforms.ToTensor(),
-        transforms.Normalize((0.5,), (0.5,))
-    ])
+    # Extract the foreground
+    foreground = cv2.bitwise_and(image, mask)
 
-    # Apply the transformation
-    image = transform(image).unsqueeze(0)
+    return foreground
 
-    # Generate the cartoon image
-    with torch.no_grad():
-        cartoon_image = model(image)
+def convert_to_svg(image, svg_path):
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Post-process the output tensor
-    cartoon_image = cartoon_image.squeeze().permute(1, 2, 0).numpy()
-    cartoon_image = (cartoon_image * 255).astype('uint8')
+    # Apply a binary threshold to get a binary image
+    _, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
 
-    # Save the cartoon image
-    cartoon_image_path = 'app/static/images/cartoon.jpg'
-    Image.fromarray(cartoon_image).save(cartoon_image_path)
+    # Find contours
+    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    return cartoon_image_path
-"""
+    # Create an SVG drawing
+    dwg = svgwrite.Drawing(svg_path, profile='tiny')
+
+    # Add contours to the SVG
+    for contour in contours:
+        points = [(point[0][0], point[0][1]) for point in contour]
+        dwg.add(dwg.polygon(points, fill='black'))
+
+    # Save the SVG file
+    dwg.save()
+
+def process_image(image_path, svg_path):
+    # Remove the background
+    foreground = remove_background(image_path)
+
+    # Convert to SVG
+    convert_to_svg(foreground, svg_path)

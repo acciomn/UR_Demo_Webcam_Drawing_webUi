@@ -1,4 +1,5 @@
 Flask
 opencv-python
+Pillow
 numpy
-pillow
+svgwrite
