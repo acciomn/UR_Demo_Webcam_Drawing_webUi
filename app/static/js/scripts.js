@@ -111,3 +111,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+document.addEventListener('DOMContentLoaded', function() {
+    // Existing code...
+
+    const processButton = document.getElementById('process-button');
+
+    processButton.addEventListener('click', async function() {
+        try {
+            const response = await fetch('/convert_to_svg', { method: 'POST' });
+            const result = await response.json();
+            if (result.status === 'Image converted to SVG successfully') {
+                const capturedImage = document.getElementById('captured-image');
+                capturedImage.src = result.svg_url;
+                capturedImage.style.display = 'block';
+            } else {
+                console.error(result.status);
+            }
+        } catch (error) {
+            console.error('Error processing image:', error);
+        }
+    });
+});

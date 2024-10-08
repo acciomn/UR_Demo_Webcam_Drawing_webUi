@@ -113,6 +113,7 @@ def convert_to_cartoon_route():
 def convert_to_svg_route():
     try:
         image_path = request.form['image_path']
+        # image_path = 'app/static/images/'  # Update this path as needed
         svg_path = os.path.splitext(image_path)[0] + '.svg'
         process_image(image_path, svg_path)
         svg_url = url_for('static', filename=f'images/{os.path.basename(svg_path)}')
