@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UR Drawing Demo</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='images/icon.ico') }}">
+    <link rel="icon" href="{{ url_for('static', filename='icons/icon.ico') }}">
 </head>
 <body>
     <h1>UR Drawing Demo</h1>
@@ -14,8 +14,8 @@
             <div id="camera-container">
                 <img src="{{ url_for('camera.video_feed') }}" id="video" width="640" height="480" alt="Video Feed">
             </div>
-            <div id="captured-image-container">
-                <img id="captured-image" src="" alt="Captured Image">
+            <div id="image-container">
+                <img src="" id="captured-image" alt="Processed Image">
                 <div id="save-path"></div>
             </div>
         </div>

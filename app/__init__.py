@@ -2,6 +2,7 @@ from flask import Flask
 import os
 from instance.config import config
 
+
 def create_app(config_name=None):
     app = Flask(__name__, static_folder='static')
 

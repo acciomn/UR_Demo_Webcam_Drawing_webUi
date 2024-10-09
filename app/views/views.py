@@ -1,12 +1,12 @@
 import signal as sig
-import sys
 import logging
+from fileinput import filename
+from time import sleep
+
 from flask import Blueprint, Response, jsonify, render_template, url_for, request, send_from_directory
 from app.controllers.camera_controller import gen, global_camera
 import os, time
 from app.utils.image_processing import process_image
-from PIL import Image
-# from app.utils.image_processing import convert_to_cartoon
 
 bp = Blueprint('camera', __name__)
 
@@ -55,7 +55,10 @@ def capture_image():
 
         # Capture the image using the camera's capture_image method
         img = global_camera.capture_image()
+        # Save the image using the PIL save method
         img.save(image_path, format='PNG')
+        # Save the image using the save_file function
+        # save_file(img, image_url, 'png')
 
         image_url = url_for('static', filename=f'images/{image_filename}')
         return jsonify({'status': 'Image captured successfully', 'image_url': image_url})
@@ -109,11 +112,11 @@ def convert_to_cartoon_route():
     except Exception as e:
         return jsonify({'status': f'Error converting image: {str(e)}'})"""
 
-@bp.route('/convert_to_svg', methods=['POST'])
-def convert_to_svg_route():
+@bp.route('/process_image', methods=['POST'])
+def process_image_route():
     try:
-        image_path = request.form['image_path']
-        # image_path = 'app/static/images/'  # Update this path as needed
+        image_path = request.form['svg_path']
+        # image_path = os.path.abspath("app/static/images")  # Update this path as needed
         svg_path = os.path.splitext(image_path)[0] + '.svg'
         process_image(image_path, svg_path)
         svg_url = url_for('static', filename=f'images/{os.path.basename(svg_path)}')
