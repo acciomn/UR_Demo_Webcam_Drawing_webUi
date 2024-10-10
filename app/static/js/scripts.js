@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 video.src = ''; // Reset video feed source
                 video.style.visibility = 'hidden'; // Hide video but keep its space
                 capturedImage.src = ''; // Reset captured image source
-                capturedImage.style.visibility = 'visible'; // Hide captured image but keep its space
+                capturedImage.style.visibility = 'hidden'; // Hide captured image but keep its space
                 savePath.textContent = '';
                 console.log(data);
             })
