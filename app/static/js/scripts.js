@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Display the saved path
                 const savePath = document.getElementById('save-path');
-                savePath.textContent = `Saved Path: ${result.png_url}`;
+                savePath.textContent = `Saved Path: ${result.svg_url}`;
 
             } else {
                 console.error(result.status);

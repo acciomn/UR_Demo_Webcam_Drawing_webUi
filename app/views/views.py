@@ -1,12 +1,10 @@
 import signal as sig
 import logging
-from fileinput import filename
-from time import sleep
-
 from flask import Blueprint, Response, jsonify, render_template, url_for, request, send_from_directory
 from app.controllers.camera_controller import gen, global_camera
 import os, time
 from app.utils.image_processing import process_image
+from app.utils.file_handling import save_file
 
 bp = Blueprint('camera', __name__)
 
@@ -42,9 +40,13 @@ def stop_camera():
     except Exception as e:
         return jsonify({'status': f'Error stopping camera: {str(e)}'})
 
+
 @bp.route('/capture_image', methods=['POST'])
 def capture_image():
     try:
+        # Capture the image using the camera's capture_image method
+        img = global_camera.capture_image()
+
         # Define the directory where images will be saved
         save_dir = os.path.abspath("app/static/images")
         os.makedirs(save_dir, exist_ok=True)
@@ -53,12 +55,8 @@ def capture_image():
         image_filename = f"captured_{int(time.time())}.png"
         image_path = os.path.join(save_dir, image_filename)
 
-        # Capture the image using the camera's capture_image method
-        img = global_camera.capture_image()
-        # Save the image using the PIL save method
-        img.save(image_path, format='PNG')
         # Save the image using the save_file function
-        # save_file(img, image_url, 'png')
+        save_file(img, image_path, 'png')
 
         image_url = url_for('static', filename=f'images/{image_filename}')
         return jsonify({'status': 'Image captured successfully', 'image_url': image_url})
@@ -102,15 +100,17 @@ def clear_images():
     except Exception as e:
         return jsonify({'status': f'Error clearing images: {str(e)}'})
 
-"""@bp.route('/convert_to_cartoon', methods=['POST'])
+"""
+@bp.route('/convert_to_cartoon', methods=['POST']))
 def convert_to_cartoon_route():
     try:
         image_path = request.form['image_path']
-        cartoon_image_path = convert_to_cartoon(image_path)
+        # cartoon_image_path = convert_to_cartoon(image_path)
         image_url = url_for('static', filename=f'images/{os.path.basename(cartoon_image_path)}')
         return jsonify({'status': 'Image converted successfully', 'image_url': image_url})
     except Exception as e:
-        return jsonify({'status': f'Error converting image: {str(e)}'})"""
+        return jsonify({'status': f'Error converting image: {str(e)}'})
+"""
 
 @bp.route('/process_image', methods=['POST'])
 def process_image_route():
