@@ -15,7 +15,7 @@
                 <img src="{{ url_for('camera.video_feed') }}" id="video" width="640" height="480" alt="Video Feed">
             </div>
             <div id="image-container">
-                <img src="" id="captured-image" alt="Captured Image">
+                <img src="{{ url_for('static', filename='images/{os.path.basename(svg_path)}') }}" id="captured-image" alt="Captured Image">
                 <div id="save-path"></div>
             </div>
         </div>

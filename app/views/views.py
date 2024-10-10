@@ -115,7 +115,7 @@ def convert_to_cartoon_route():
 @bp.route('/process_image', methods=['POST'])
 def process_image_route():
     try:
-        image_path = request.form['svg_path']
+        image_path = request.json['svg_path']
         # image_path = os.path.abspath("app/static/images")  # Update this path as needed
         svg_path = os.path.splitext(image_path)[0] + '.svg'
         process_image(image_path, svg_path)
