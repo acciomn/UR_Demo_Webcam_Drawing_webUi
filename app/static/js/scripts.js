@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (result.status === 'Image converted to SVG successfully') {
                 // Get the processed image element
-                const processedImage = document.getElementById('captured-image');
+                const processedImage = document.getElementById('processed-image');
                 // Update the captured image with the converted image
                 processedImage.src = result.svg_url;
                 // Show the converted image
