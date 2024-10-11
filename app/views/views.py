@@ -44,21 +44,27 @@ def stop_camera():
 @bp.route('/capture_image', methods=['POST'])
 def capture_image():
     try:
+        logging.info("Received request to capture image")
         # Capture the image using the camera's capture_image method
         img = global_camera.capture_image()
 
         # Define the directory where images will be saved
         save_dir = os.path.abspath("app/static/images")
         os.makedirs(save_dir, exist_ok=True)
+        logging.info(f"Save directory ensured: {save_dir}")
 
         # Generate a unique filename
         image_filename = f"captured_{int(time.time())}.png"
         image_path = os.path.join(save_dir, image_filename)
+        logging.info(f"Generated image filename: {image_filename}")
 
         # Save the image using the save_file function
         save_file(img, image_path, 'png')
+        logging.info(f"Image saved successfully: {image_path}")
 
         image_url = url_for('static', filename=f'images/{image_filename}')
+        logging.info(f"Image URL generated: {image_url}")
+
         return jsonify({'status': 'Image captured successfully', 'image_url': image_url})
     except Exception as e:
         return jsonify({'status': f'Error capturing image: {str(e)}'})
@@ -115,11 +121,20 @@ def convert_to_cartoon_route():
 @bp.route('/process_image', methods=['POST'])
 def process_image_route():
     try:
-        image_path = request.json['svg_path']
-        # image_path = os.path.abspath("app/static/images")  # Update this path as needed
+        logging.info("Received request to process image")
+        image_path = request.json['image_path']
+        logging.info(f"Image path received: {image_path}")
+
         svg_path = os.path.splitext(image_path)[0] + '.svg'
+        logging.info(f"SVG path generated: {svg_path}")
+
         process_image(image_path, svg_path)
+        logging.info(f"Image processed and saved as SVG: {svg_path}")
+
         svg_url = url_for('static', filename=f'images/{os.path.basename(svg_path)}')
+        logging.info(f"SVG URL generated: {svg_url}")
+
         return jsonify({'status': 'Image converted to SVG successfully', 'svg_url': svg_url})
     except Exception as e:
+        logging.error(f"Error converting image to SVG: {str(e)}")
         return jsonify({'status': f'Error converting image to SVG: {str(e)}'})
