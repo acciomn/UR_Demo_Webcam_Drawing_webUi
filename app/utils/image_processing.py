@@ -1,10 +1,10 @@
 import os
 import cv2
 import svgwrite
-import requests
-import numpy as np
+from rembg import remove
+from PIL import Image
 import logging
-from app.utils.file_handling import save_file
+from urllib.parse import urlparse
 
 # Configure logging
 logging.basicConfig(
@@ -16,69 +16,38 @@ logging.basicConfig(
     ]
 )
 
-def download_image(url, save_path):
+
+def remove_background(image_url, save_path):
     try:
-        # Send a GET request to the URL
-        response = requests.get(url)
-        response.raise_for_status()  # Raise an error for bad status codes
-        logging.info(f"Image downloaded successfully from {url}")
+        # Extract the file path from the URL
+        logging.info(f"Parsing URL: {image_url}")
+        parsed_url = urlparse(image_url)
+        image_path = os.path.join('app/static/images', os.path.basename(parsed_url.path))
+        logging.info(f"Image path extracted: {image_path}")
 
-        # Convert the response content to a numpy array
-        image_array = np.frombuffer(response.content, np.uint8)
-        logging.info("Image content converted to numpy array")
+        # Open the input image
+        logging.info(f"Opening image: {image_path}")
+        input_image = Image.open(image_path)
+        logging.info(f"Image opened successfully: {image_path}")
 
-        # Decode the image array to an OpenCV image
-        image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-        if image is None:
-            logging.info("Failed to decode image")
-            raise ValueError("Failed to decode image")
+        # Convert to a PIL image
+        logging.info("Converting to PIL image")
+        pil_image = Image.fromarray(input_image)
+        logging.info("Image converted to PIL image successfully")
 
-        else:
-            logging.info("Image decoded successfully")
+        # Remove the background
+        logging.info("Removing background")
+        output_image = remove(pil_image)
+        logging.info("Background removed successfully")
 
-        # Save the image to the specified path
-        cv2.imwrite(save_path, image)
-        print(f"Image saved to {save_path}")
+        # Save the output image
+        output_image.save(save_path)
         logging.info(f"Image saved to {save_path}")
         return save_path
 
     except Exception as e:
-        print(f"Error downloading or saving image: {str(e)}")
-        logging.info(f"Error downloading or saving image: {str(e)}")
-
-def remove_background(image_url, save_path):
-    try:
-        logging.info(f"Removing background for image: {image_url}")
-        # Download the image
-        download_image(image_url, save_path)
-
-        # Read the image
-        image = cv2.imread(save_path)
-        if image is None:
-            raise FileNotFoundError(f"Image not found at path: {save_path}")
-
-        # Convert to grayscale
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-        # Apply a binary threshold to get a binary image
-        _, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
-
-        # Find contours
-        contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-        # Create a mask for the foreground
-        mask = np.zeros_like(image)
-        cv2.drawContours(mask, contours, -1, (255, 255, 255), thickness=cv2.FILLED)
-
-        # Extract the foreground
-        foreground = cv2.bitwise_and(image, mask)
-
-        logging.info("Background removed successfully")
-        return foreground
-
-    except Exception as e:
         logging.error(f"Error removing background: {str(e)}")
-        raise
+
 
 def convert_to_svg(image):
     logging.info("Converting image to SVG")
@@ -94,12 +63,19 @@ def convert_to_svg(image):
     logging.info("Image converted to SVG successfully")
     return contours
 
+
 def process_image(image_path, svg_path):
     logging.info(f"Processing image: {image_path} to SVG: {svg_path}")
     # Remove the background
     foreground = remove_background(image_path, svg_path)
     logging.info("Background removed")
 
+    # Convert PNG and save the contours as an SVG file
+    convert_png_to_svg(foreground)
+    return svg_path
+
+
+"""
     # Convert to SVG
     contours = convert_to_svg(foreground)
     logging.info("Image converted to SVG")
@@ -107,14 +83,39 @@ def process_image(image_path, svg_path):
     # Save the SVG using the save_file function
     save_file(contours, svg_path, 'svg')
     logging.info("Image processing completed")
+"""
 
-    return svg_path
+
+# return svg_path
+
+def save_contours_as_svg(contours, svg_path):
+    # Create an SVG drawing
+    dwg = svgwrite.Drawing(svg_path, profile='tiny')
+
+    # Add contours to the SVG drawing
+    for contour in contours:
+        points = [(point[0][0], point[0][1]) for point in contour]
+        dwg.add(dwg.polygon(points, fill='black'))
+
+    # Save the SVG file
+    dwg.save()
+
+
+"""
+# Example usage
+image_path = 'path/to/image.png'
+image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+_, binary = cv2.threshold(image, 150, 255, cv2.THRESH_BINARY)
+contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+save_contours_as_svg(contours, 'output.svg')
+"""
+
 
 def convert_png_to_svg(png_path):
     try:
         # Ensure the file exists
         if not os.path.exists(png_path):
-            raise FileNotFoundError(f"File not found: {png_path}")
+            raise FileNotFoundError(f"File is not found: {png_path}")
 
         # Read the image
         image = cv2.imread(png_path)

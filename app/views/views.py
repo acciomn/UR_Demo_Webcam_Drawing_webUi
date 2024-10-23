@@ -62,6 +62,7 @@ def capture_image():
         save_file(img, image_path, 'png')
         logging.info(f"Image saved successfully: {image_path}")
 
+        # Generate the image URL
         image_url = url_for('static', filename=f'images/{image_filename}')
         logging.info(f"Image URL generated: {image_url}")
 
