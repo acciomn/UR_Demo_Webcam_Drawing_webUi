@@ -57,3 +57,45 @@ def remove_background(image_url, save_path):
         raise
 
 # pil_image = Image.fromarray(image)
+
+def capture_and_process_image(camera, save_path):
+    try:
+        # Capture the image using the camera's capture_image method
+        logging.info("Capturing image from webcam")
+        img = global_camera.capture_image()
+
+        # Remove the background
+        logging.info("Removing background from image")
+        img_no_bg = remove(img)
+
+        # Convert the image to a format suitable for OpenCV
+        img_no_bg_cv = cv2.cvtColor(np.array(img_no_bg), cv2.COLOR_RGB2BGR)
+
+        # Convert the image to grayscale
+        logging.info("Converting image to grayscale")
+        gray = cv2.cvtColor(img_no_bg_cv, cv2.COLOR_BGR2GRAY)
+
+        # Apply a binary threshold to get a binary image
+        logging.info("Applying binary threshold")
+        _, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+
+        # Find contours
+        logging.info("Finding contours")
+        contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # Create an SVG drawing
+        logging.info(f"Saving contours to SVG file: {save_path}")
+        dwg = svgwrite.Drawing(save_path, profile='tiny')
+
+        # Add contours to the SVG drawing
+        for contour in contours:
+            points = [(float(point[0][0]), float(point[0][1])) for point in contour]
+            dwg.add(dwg.polygon(points, fill='black'))
+
+        # Save the SVG file
+        dwg.save()
+        logging.info(f"Image processed and saved as SVG: {save_path}")
+
+    except Exception as e:
+        logging.error(f"Error processing image: {str(e)}")
+        raise RuntimeError(f"Error processing image: {str(e)}")
