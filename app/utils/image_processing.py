@@ -154,3 +154,4 @@ def convert_png_to_svg(png_path):
 
 # Example usage
 # convert_png_to_svg('app/static/images/captured_image.png')
+
