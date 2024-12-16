@@ -1,0 +1,12 @@
+Flask
+opencv-python
+Pillow
+numpy
+svgwrite
+requests
+rembg
+opencv-python-headless
+numpy
+potrace
+cors
+
