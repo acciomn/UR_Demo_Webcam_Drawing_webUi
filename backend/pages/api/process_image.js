@@ -1,7 +1,7 @@
 import Cors from "cors";
-import fs from "fs";
-import path from "path";
 import { spawn } from "child_process";
+import path from "path";
+import { promises as fs } from "fs";
 
 const cors = Cors({
   origin: "*",
@@ -17,54 +17,100 @@ function runMiddleware(req, res, fn) {
   });
 }
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "50mb", // Allow larger image uploads
+    },
+  },
+};
+
 export default async function handler(req, res) {
   await runMiddleware(req, res, cors);
 
-  if (req.method === "POST") {
-    const { image, sensitivity } = req.body;
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method Not Allowed" });
+  }
 
-    try {
-      const buffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), "base64");
+  const { image, sensitivity = 50 } = req.body;
 
-      const outputDir = path.resolve("./public/images");
-      if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+  if (!image) {
+    return res.status(400).json({ message: "No image provided" });
+  }
 
-      const originalPath = path.join(outputDir, "original.png");
-      const adjustedPath = path.join(outputDir, "adjusted.png");
-      const svgPath = path.join(outputDir, "adjusted.svg");
-      const gcodePath = path.join(outputDir, "output.ncc");
+  try {
+    // Remove base64 prefix and convert to buffer
+    const buffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), "base64");
 
-      fs.writeFileSync(originalPath, buffer);
+    const outputDir = path.resolve("./public/images");
+    await fs.mkdir(outputDir, { recursive: true });
 
-      const pythonProcess = spawn("python3", [
-        "./scripts/process_image.py",
-        originalPath,
-        adjustedPath,
-        svgPath,
-        gcodePath,
-        sensitivity.toString(),
-      ]);
+    const originalPath = path.join(outputDir, "original.png");
+    const adjustedPath = path.join(outputDir, "adjusted.png");
+    const svgPath = path.join(outputDir, "adjusted.svg");
+    const gcodePath = path.join(outputDir, "output.ncc");
 
-      pythonProcess.stdout.on("data", (data) => console.log(`Python stdout: ${data}`));
-      pythonProcess.stderr.on("data", (data) => console.error(`Python stderr: ${data}`));
+    // Save the original image
+    await fs.writeFile(originalPath, buffer);
 
-      pythonProcess.on("close", (code) => {
-        if (code !== 0) {
-          return res.status(500).json({ message: "Processing pipeline failed." });
+    // Call process_image.py using the virtual environment's Python
+    const pyScript = path.join(process.cwd(), "scripts", "process_image.py");
+    const venvPython = path.join(process.cwd(), "venv", "bin", "python3"); // Path to virtual env Python
+    const py = spawn(venvPython, [pyScript, originalPath, adjustedPath, svgPath, gcodePath, sensitivity.toString()], {
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+
+    let stdout = "";
+    let stderr = "";
+
+    py.stdout.on("data", (data) => {
+      stdout += data.toString();
+      console.log(`Python stdout: ${data}`);
+    });
+
+    py.stderr.on("data", (data) => {
+      stderr += data.toString();
+      console.error(`Python stderr: ${data}`);
+    });
+
+    py.on("close", (code) => {
+      if (code !== 0) {
+        return res.status(500).json({ message: "Processing pipeline failed", error: stderr });
+      }
+
+      try {
+        const result = JSON.parse(stdout);
+        if (result.status === "error") {
+          return res.status(500).json({ message: result.message });
         }
+
+        // Verify all files exist
+        const files = [
+          result.original_path,
+          result.adjusted_path,
+          result.svg_path,
+          result.gcode_path,
+        ];
+        for (const file of files) {
+          if (!fs.existsSync(file)) {
+            return res.status(500).json({ message: `File not saved: ${file}` });
+          }
+        }
+
         res.status(200).json({
-          message: "Processing successful.",
-          original: "/images/original.png",
-          adjusted: "/images/adjusted.png",
+          message: "Processing successful",
+          original: "/images/original.png",  // Original PNG
+          adjusted: "/images/adjusted.png",  // Background-removed + edges PNG
           svg: "/images/adjusted.svg",
           gcode: "/images/output.ncc",
         });
-      });
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ message: "An error occurred.", error: error.toString() });
-    }
-  } else {
-    res.status(405).json({ message: "Method not allowed" });
+      } catch (e) {
+        console.error(`Invalid Python output: ${stdout}`);
+        res.status(500).json({ message: "Invalid Python output", error: e.message });
+      }
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "An error occurred", error: error.message });
   }
 }

@@ -9,13 +9,37 @@
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     
-    <!-- Add OpenCV.js script here -->
-    <script async src="https://docs.opencv.org/master/opencv.js" type="text/javascript"></script>
+    <!-- Load OpenCV.js from the official OpenCV documentation -->
+    <script
+      async
+      src="https://docs.opencv.org/4.9.0/opencv.js"
+      onload="onOpenCVLoaded()"
+      onerror="onOpenCVError()"
+      type="text/javascript"
+    ></script>
 
-    <title>React App</title>
+    <title>Real-Time Edge Detection Demo</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <script>
+      function onOpenCVLoaded() {
+        console.log("OpenCV.js script loaded successfully");
+        if (typeof cv === "undefined") {
+          console.error("cv is not defined after script load. OpenCV.js may have failed to initialize.");
+          return;
+        }
+        cv.onRuntimeInitialized = () => {
+          console.log("OpenCV.js fully initialized");
+          console.log("cv.matFromImageData exists:", typeof cv.matFromImageData === "function");
+          window.cvReady = true; // Set a global flag for React to check
+        };
+      }
+
+      function onOpenCVError() {
+        console.error("Failed to load OpenCV.js from OpenCV documentation. Check network or URL availability.");
+      }
+    </script>
   </body>
 </html>
