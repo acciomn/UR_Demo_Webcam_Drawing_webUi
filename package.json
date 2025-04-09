@@ -7,7 +7,9 @@
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "opencv.js": "^1.2.1"
+    "image-type": "^5.2.0",
+    "opencv.js": "^1.2.1",
+    "uuid": "^11.1.0"
   },
   "name": "ur_demo_webcam_drawing_webui",
   "version": "1.0.0",
