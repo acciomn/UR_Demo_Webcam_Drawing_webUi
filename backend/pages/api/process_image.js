@@ -122,13 +122,13 @@ export default async function handler(req, res) {
       const tempInputPath = path.join(tempRequestDir, `original.png`);
       const tempAdjustedPath = path.join(tempRequestDir, `adjusted.png`);
       const tempSvgPath = path.join(tempRequestDir, `adjusted.svg`);
-      const tempGcodePathNcc = path.join(tempRequestDir, `output.ncc`);
+      const tempGcodePathNcc = path.join(tempRequestDir, `output.txt`);
 
       // Define final file paths
       const finalInputPath = path.join(IMAGES_DIR, `original.png`);
       const finalAdjustedPath = path.join(IMAGES_DIR, `adjusted.png`);
       const finalSvgPath = path.join(IMAGES_DIR, `adjusted.svg`);
-      const finalGcodePathNcc = path.join(IMAGES_DIR, `output.ncc`);
+      const finalGcodePathNcc = path.join(IMAGES_DIR, `output.txt`);
       const finalGcodePathNc = path.join(IMAGES_DIR, `output.nc`);
 
       console.log(`Saving original image to: ${tempInputPath}`);
@@ -227,7 +227,7 @@ export default async function handler(req, res) {
       const tempInputPath = path.join(tempRequestDir, `original.png`);
       const tempAdjustedPath = path.join(tempRequestDir, `adjusted.png`);
       const tempSvgPath = path.join(tempRequestDir, `adjusted.svg`);
-      const tempGcodePath = path.join(tempRequestDir, `output.ncc`);
+      const tempGcodePath = path.join(tempRequestDir, `output.txt`);
 
       // Define final file paths
       const finalInputPath = path.join(IMAGES_DIR, `original.png`);

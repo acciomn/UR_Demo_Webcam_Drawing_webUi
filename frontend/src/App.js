@@ -495,7 +495,7 @@ function App() {
         document.body.removeChild(link);
       };
       downloadFile(response.data.svg, "adjusted.svg");
-      downloadFile(response.data.gcode, "output.ncc");
+      downloadFile(response.data.gcode, "output.txt");
       downloadFile(response.data.gcodeNc, "output.nc");
       setDrawingStatus("Files generated successfully!");
       setTimeout(() => setDrawingStatus(""), 5000);
@@ -733,11 +733,11 @@ function App() {
               <Box>
                 <Typography variant="h6">Generated GCode:</Typography>
                 <pre style={{ background: "#f0f0f0", padding: "10px", maxHeight: "200px", overflow: "auto" }}>
-                  <a href={`${BACKEND_URL}${gcodeFile}`} download="output.ncc">
-                    Download GCode (.ncc)
+                  <a href={`${BACKEND_URL}${gcodeFile}`} download="output.txt">
+                    Download GCode (.txt)
                   </a>
                   <br />
-                  <a href={`${BACKEND_URL}${gcodeFile.replace('.ncc', '.nc')}`} download="output.nc">
+                  <a href={`${BACKEND_URL}${gcodeFile.replace('.txt', '.nc')}`} download="output.nc">
                     Download GCode (.nc)
                   </a>
                 </pre>
