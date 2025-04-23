@@ -737,7 +737,7 @@ function App() {
                     Download GCode (.txt)
                   </a>
                   <br />
-                  <a href={`${BACKEND_URL}${gcodeFile.replace('.txt', '.nc')}`} download="output.ncc">
+                  <a href={`${BACKEND_URL}${gcodeFile.replace('.txt', '.ncc')}`} download="output.ncc">
                     Download GCode (.ncc)
                   </a>
                 </pre>
