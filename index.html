@@ -1,0 +1,25 @@
+<!-- ...existing code... -->
+<button id="sendToRobotBtn">Send to Robot</button>
+
+<script>
+document.getElementById('sendToRobotBtn').onclick = function() {
+    // Replace 'yourfile.nc' with the actual filename or get it dynamically
+    fetch('/send-to-robot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: 'yourfile.nc' })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('File sent to robot successfully!');
+        } else {
+            alert('Failed to send file: ' + data.error);
+        }
+    })
+    .catch(err => {
+        alert('Error: ' + err);
+    });
+};
+</script>
+<!-- ...existing code... -->

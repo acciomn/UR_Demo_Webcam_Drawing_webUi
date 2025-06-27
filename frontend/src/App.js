@@ -151,15 +151,19 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
+const BOX_SIZE = 250;
+const BOX_HEIGHT = 200;
+
 const ImageContainer = styled('div')({
-  width: 250,
-  height: 200,
+  width: BOX_SIZE,
+  height: BOX_HEIGHT,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   overflow: 'hidden',
   borderRadius: '8px',
   marginBottom: '10px',
+  background: '#fff'
 });
 
 function App() {
@@ -178,6 +182,7 @@ function App() {
   const [drawingStatus, setDrawingStatus] = useState(""); // Track drawing status
   const [userName, setUserName] = useState(""); // Store user-entered name
   const [drawName, setDrawName] = useState(false); // State for checkbox to draw name
+  const [sendStatus, setSendStatus] = useState(""); // Add state for send-to-robot status
 
   const fileInputRef = useRef(null);
   const webcamRef = useRef(null);
@@ -401,6 +406,10 @@ function App() {
       console.log("Response from /api/process_final:", response.data);
       setBgRemovedImage(`${BACKEND_URL}${response.data.bgRemoved}`);
       setProcessedCapturedImage(`${BACKEND_URL}${response.data.edges}`);
+      // If backend returns SVG path, set it here
+      if (response.data.svg) {
+        setSvgFile(response.data.svg);
+      }
       setDrawingStatus("Edges processed successfully!");
       setTimeout(() => setDrawingStatus(""), 5000);
     } catch (error) {
@@ -443,24 +452,6 @@ function App() {
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setCapturedImage(ev.target.result);
-    };
-    reader.onerror = (error) => {
-      console.error("Error reading file:", error);
-      alert("Error reading file: " + error.message);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleExit = () => {
-    alert("Exit functionality not implemented.");
-  };
-
   const handleSave = async () => {
     if (!capturedImage) {
       alert("No image captured or uploaded to save.");
@@ -480,25 +471,7 @@ function App() {
       console.log("Response from /api/process_image:", response.data);
       setSvgFile(response.data.svg);
       setGcodeFile(response.data.gcode);
-      console.log("Original Image:", response.data.original);
-      console.log("Background Removed (Adjusted PNG):", response.data.adjusted);
-      console.log("SVG File:", response.data.svg);
-      console.log("GCode File:", response.data.gcode);
-
-      // Auto-download files
-      const downloadFile = (url, filename) => {
-        const link = document.createElement("a");
-        link.href = `${BACKEND_URL}${url}`;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      };
-      downloadFile(response.data.svg, "adjusted.svg");
-      downloadFile(response.data.gcode, "output.txt");
-      downloadFile(response.data.gcodeNc, "output.nc");
-      setDrawingStatus("Files generated successfully!");
-      setTimeout(() => setDrawingStatus(""), 5000);
+      // Remove the line that sets processedCapturedImage to the SVG
     } catch (error) {
       console.error("Error in handleSave:", {
         message: error.message,
@@ -510,8 +483,55 @@ function App() {
     }
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setCapturedImage(ev.target.result);
+      // Only reset SVG and GCode, not processedCapturedImage
+      setSvgFile(null);
+      setGcodeFile(null);
+    };
+    reader.onerror = (error) => {
+      console.error("Error reading file:", error);
+      alert("Error reading file: " + error.message);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleExit = () => {
+    alert("Exit functionality not implemented.");
+  };
+
   const handleProcessEdges = () => {
     processImageForPreview();
+  };
+
+  // Handler for sending GCode to robot via FTP
+  const handleSendToRobot = async () => {
+    if (!gcodeFile) {
+      setSendStatus("No GCode file to send.");
+      setTimeout(() => setSendStatus(""), 4000);
+      return;
+    }
+    // Derive .nc filename from .txt
+    const ncFilename = gcodeFile.replace('.txt', '.nc');
+    setSendStatus("Sending to robot via FTP...");
+    try {
+      // POST to backend API endpoint with filename
+      const response = await axios.post(`${BACKEND_URL}/api/send-to-robot`, {
+        filename: ncFilename
+      });
+      if (response.data.success) {
+        setSendStatus("File sent to robot successfully!");
+      } else {
+        setSendStatus("Failed to send file: " + (response.data.error || "Unknown error"));
+      }
+    } catch (err) {
+      setSendStatus("Error: " + (err.response?.data?.error || err.message));
+    }
+    setTimeout(() => setSendStatus(""), 5000);
   };
 
   const clearImage = () => {
@@ -524,6 +544,7 @@ function App() {
     setDrawingStatus("");
     setUserName("");
     setDrawName(false);
+    setSendStatus(""); // Clear send status as well
     alert("All images and files cleared successfully!");
   };
 
@@ -570,9 +591,9 @@ function App() {
         </AppBar>
 
         <Container maxWidth="lg" sx={{ mt: 4 }}>
-          <Grid container spacing={3}>
+          <Grid container spacing={3} justifyContent="center" alignItems="flex-start">
             {/* Slider */}
-            <Grid item xs={12} md={2}>
+            <Grid item xs={12} sm={6} md={2}>
               <StyledPaper elevation={3}>
                 <Typography align="center" variant="h6">
                   Adjust Edge Detection
@@ -585,7 +606,7 @@ function App() {
                   min={1}
                   max={100}
                   valueLabelDisplay="auto"
-                  sx={{ height: 300, mx: "auto" }}
+                  sx={{ height: BOX_HEIGHT, mx: "auto" }}
                 />
               </StyledPaper>
             </Grid>
@@ -593,14 +614,17 @@ function App() {
             {/* Live Camera Feed */}
             <Grid item xs={12} sm={6} md={2}>
               <StyledPaper elevation={3}>
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  width={250}
-                  height={200}
-                  videoConstraints={{ facingMode: "user" }}
-                />
+                <ImageContainer>
+                  <Webcam
+                    audio={false}
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    width={BOX_SIZE}
+                    height={BOX_HEIGHT}
+                    videoConstraints={{ facingMode: "user" }}
+                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                  />
+                </ImageContainer>
                 <Typography variant="body1" sx={{ mt: 1 }}>
                   Live Camera Feed
                 </Typography>
@@ -659,7 +683,7 @@ function App() {
               </StyledPaper>
             </Grid>
 
-            {/* Live Camera Feed with Edge Detection (New 4th Window) */}
+            {/* Live Camera Feed with Edge Detection */}
             <Grid item xs={12} sm={6} md={2}>
               <StyledPaper elevation={3}>
                 <ImageContainer>
@@ -671,7 +695,7 @@ function App() {
               </StyledPaper>
             </Grid>
 
-            {/* Processed (Edges) View (Captured Image) */}
+            {/* Processed (Edges) View */}
             <Grid item xs={12} sm={6} md={2}>
               <StyledPaper elevation={3}>
                 {edgeDetectedImage ? (
@@ -696,19 +720,38 @@ function App() {
               </StyledPaper>
             </Grid>
 
-            {/* SVG Display */}
-            <Grid item xs={12} sm={6} md={2}>
+            {/* SVG Display - Make this box larger to show SVG fully */}
+            <Grid item xs={12} sm={12} md={4}>
               <StyledPaper elevation={3}>
                 {svgFile ? (
                   <Box>
                     <Typography variant="h6">Generated SVG:</Typography>
-                    <ImageContainer>
-                      <img
-                        src={`${BACKEND_URL}${svgFile}`}
-                        alt="SVG Preview"
-                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    <Box
+                      sx={{
+                        width: BOX_SIZE * 2,
+                        height: BOX_HEIGHT * 2,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "#fff",
+                        position: "relative",
+                        overflow: "hidden",
+                        margin: "0 auto"
+                      }}
+                    >
+                      <object
+                        data={`${BACKEND_URL}${svgFile}`}
+                        type="image/svg+xml"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                          display: "block",
+                          pointerEvents: "none"
+                        }}
+                        aria-label="SVG Preview"
                       />
-                    </ImageContainer>
+                    </Box>
                     <StyledButton
                       variant="contained"
                       href={`${BACKEND_URL}${svgFile}`}
@@ -749,6 +792,7 @@ function App() {
             )}
           </Box>
 
+          {/* Action Buttons Row */}
           <Box sx={{ mt: 3, textAlign: "center" }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
               <StyledTextField
@@ -769,7 +813,7 @@ function App() {
                 label="Draw Name Below Image"
               />
             </Box>
-            <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
               <StyledButton
                 variant="contained"
                 color="secondary"
@@ -809,7 +853,22 @@ function App() {
               >
                 Clear
               </StyledButton>
+              {/* Send to Robot button in the same row */}
+              <StyledButton
+                variant="contained"
+                color="primary"
+                onClick={handleSendToRobot}
+                disabled={!gcodeFile}
+                sx={{ ml: 1 }}
+              >
+                Send to Robot
+              </StyledButton>
             </Box>
+            {sendStatus && (
+              <Typography variant="body2" sx={{ mt: 1, color: sendStatus.includes("success") ? "green" : "red" }}>
+                {sendStatus}
+              </Typography>
+            )}
             {drawingStatus && (
               <Typography variant="body1" sx={{ mt: 2, color: drawingStatus.includes("Error") ? "red" : "green" }}>
                 {drawingStatus}
