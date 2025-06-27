@@ -471,7 +471,29 @@ function App() {
       console.log("Response from /api/process_image:", response.data);
       setSvgFile(response.data.svg);
       setGcodeFile(response.data.gcode);
+<<<<<<< HEAD
       // Remove the line that sets processedCapturedImage to the SVG
+=======
+      console.log("Original Image:", response.data.original);
+      console.log("Background Removed (Adjusted PNG):", response.data.adjusted);
+      console.log("SVG File:", response.data.svg);
+      console.log("GCode File:", response.data.gcode);
+
+      // Auto-download files
+      const downloadFile = (url, filename) => {
+        const link = document.createElement("a");
+        link.href = `${BACKEND_URL}${url}`;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+      downloadFile(response.data.svg, "adjusted.svg");
+      downloadFile(response.data.gcode, "output.txt");
+      downloadFile(response.data.gcodeNc, "output..nc");
+      setDrawingStatus("Files generated successfully!");
+      setTimeout(() => setDrawingStatus(""), 5000);
+>>>>>>> 656afc1ce42d9fd4f5bc23dd879d5138178bb66a
     } catch (error) {
       console.error("Error in handleSave:", {
         message: error.message,
