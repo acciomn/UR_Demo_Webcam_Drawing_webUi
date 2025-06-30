@@ -839,7 +839,7 @@ export default async function handler(req, res) {
       const finalAdjustedPath = path.join(IMAGES_DIR, `adjusted.png`);
       const finalSvgPath = path.join(IMAGES_DIR, `adjusted.svg`);
       const finalGcodePathNcc = path.join(IMAGES_DIR, `output.txt`);
-      const finalGcodePathNc = path.join(IMAGES_DIR, `output.ncc`);
+      const finalGcodePathNc = path.join(IMAGES_DIR, `output.nc`);
 
       console.log(`Saving original image to: ${tempInputPath}`);
       await fs.writeFile(tempInputPath, imageBuffer);

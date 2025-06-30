@@ -471,29 +471,7 @@ function App() {
       console.log("Response from /api/process_image:", response.data);
       setSvgFile(response.data.svg);
       setGcodeFile(response.data.gcode);
-<<<<<<< HEAD
       // Remove the line that sets processedCapturedImage to the SVG
-=======
-      console.log("Original Image:", response.data.original);
-      console.log("Background Removed (Adjusted PNG):", response.data.adjusted);
-      console.log("SVG File:", response.data.svg);
-      console.log("GCode File:", response.data.gcode);
-
-      // Auto-download files
-      const downloadFile = (url, filename) => {
-        const link = document.createElement("a");
-        link.href = `${BACKEND_URL}${url}`;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      };
-      downloadFile(response.data.svg, "adjusted.svg");
-      downloadFile(response.data.gcode, "output.txt");
-      downloadFile(response.data.gcodeNc, "output..nc");
-      setDrawingStatus("Files generated successfully!");
-      setTimeout(() => setDrawingStatus(""), 5000);
->>>>>>> 656afc1ce42d9fd4f5bc23dd879d5138178bb66a
     } catch (error) {
       console.error("Error in handleSave:", {
         message: error.message,
@@ -532,21 +510,13 @@ function App() {
 
   // Handler for sending GCode to robot via FTP
   const handleSendToRobot = async () => {
-    if (!gcodeFile) {
-      setSendStatus("No GCode file to send.");
-      setTimeout(() => setSendStatus(""), 4000);
-      return;
-    }
-    // Derive .nc filename from .txt
-    const ncFilename = gcodeFile.replace('.txt', '.nc');
     setSendStatus("Sending to robot via FTP...");
     try {
-      // POST to backend API endpoint with filename
-      const response = await axios.post(`${BACKEND_URL}/api/send-to-robot`, {
-        filename: ncFilename
-      });
+      // POST to backend API endpoint (no filename needed, backend always sends output.nc)
+      const response = await axios.post(`${BACKEND_URL}/api/send-to-robot`);
       if (response.data.success) {
         setSendStatus("File sent to robot successfully!");
+        window.alert("File sent to robot successfully!\n" + (response.data.ftpConfirmation || ""));
       } else {
         setSendStatus("Failed to send file: " + (response.data.error || "Unknown error"));
       }
@@ -880,7 +850,6 @@ function App() {
                 variant="contained"
                 color="primary"
                 onClick={handleSendToRobot}
-                disabled={!gcodeFile}
                 sx={{ ml: 1 }}
               >
                 Send to Robot
@@ -928,4 +897,6 @@ function App() {
   );
 }
 
+
 export default App;
+
