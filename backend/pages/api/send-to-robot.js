@@ -51,14 +51,22 @@ export default async function handler(req, res) {
         } else {
           console.log('FTP upload successful. Output:', stdout);
           // After FTP, send URScript to robot to load and run the toolpath
+          // AUTOMATION NOTE:
+          // The following URScript uses the Remote TCP Toolpath API to load and run the GCode file automatically.
+          // The robot will use the TCP and feature (drawing place) configured in its Remote TCP setup.
+          // No manual steps are required after sending this script.
+          // Notify frontend that drawing has started
+          if (!res.headersSent) {
+            res.write('Drawing started...\n');
+          }
           const script = `
-def run_toolpath():
-  path_id = mc_load_path("/programs/${filename}", False)
-  mc_add_path(path_id, 1.0, 0.1, 0.0)
-  mc_run_motion()
-end
-run_toolpath()
-`;
+            def run_toolpath():
+              path_id = mc_load_path("/programs/${filename}", False)
+              mc_add_path(path_id, 1.0, 0.1, 0.0)
+              mc_run_motion()
+            end
+            run_toolpath()
+            `;
           const client = new net.Socket();
           let responded = false;
 
