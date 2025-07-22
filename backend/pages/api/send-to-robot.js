@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 
     // Call the Python script for FTP upload
     execFile(
-      'python',
+      'python3',
       [
         path.join(process.cwd(), 'ftp_upload.py'),
         ROBOT_IP,

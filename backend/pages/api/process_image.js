@@ -474,7 +474,7 @@
 //       fileTimestamps.set(finalGcodePathNcc, now);
 //       fileTimestamps.set(finalGcodePathNc, now);
 
-//       const pythonCmd = process.env.PYTHON_CMD || 'python';
+//       const pythonCmd = process.env.PYTHON_CMD || 'python3';
 //       const scriptPath = path.join(SCRIPTS_DIR, 'process_image.py');
 //       console.log(`Resolved script path: ${scriptPath}`);
 //       const command = `${pythonCmd} "${scriptPath}" "${tempInputPath}" "${tempAdjustedPath}" "${tempSvgPath}" "${tempGcodePathNcc}" ${sensitivityNum} "${name || ''}" ${drawName ? 'true' : 'false'}`;
@@ -618,7 +618,7 @@
 //       fileTimestamps.set(finalInputPath, now);
 //       fileTimestamps.set(finalAdjustedPath, now);
 
-//       const pythonCmd = process.env.PYTHON_CMD || 'python';
+//       const pythonCmd = process.env.PYTHON_CMD || 'python3';
 //       const scriptPath = path.join(SCRIPTS_DIR, 'process_image.py');
 //       console.log(`Resolved script path: ${scriptPath}`);
 //       const command = `${pythonCmd} "${scriptPath}" "${tempInputPath}" "${tempAdjustedPath}" "${tempSvgPath}" "${tempGcodePath}" ${sensitivityNum} "" false`;
@@ -852,7 +852,7 @@ export default async function handler(req, res) {
       fileTimestamps.set(finalGcodePathNcc, now);
       fileTimestamps.set(finalGcodePathNc, now);
 
-      const pythonCmd = process.env.PYTHON_CMD || 'python';
+      const pythonCmd = process.env.PYTHON_CMD || 'python3';
       const scriptPath = path.join(SCRIPTS_DIR, 'process_image.py');
       console.log(`Resolved script path: ${scriptPath}`);
       const command = `${pythonCmd} "${scriptPath}" "${tempInputPath}" "${tempAdjustedPath}" "${tempSvgPath}" "${tempGcodePathNcc}" ${sensitivityNum} "${name || ''}" ${drawName ? 'true' : 'false'}`;
@@ -951,7 +951,7 @@ export default async function handler(req, res) {
       fileTimestamps.set(finalInputPath, now);
       fileTimestamps.set(finalAdjustedPath, now);
 
-      const pythonCmd = process.env.PYTHON_CMD || 'python';
+      const pythonCmd = process.env.PYTHON_CMD || 'python3';
       const scriptPath = path.join(SCRIPTS_DIR, 'process_image.py');
       console.log(`Resolved script path: ${scriptPath}`);
       const command = `${pythonCmd} "${scriptPath}" "${tempInputPath}" "${tempAdjustedPath}" "${tempSvgPath}" "${tempGcodePath}" ${sensitivityNum} "" false`;
