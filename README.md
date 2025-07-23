@@ -36,7 +36,7 @@ buttons.
 
 3. Teach TCP of drawing tool
 
-4. Select `output.nc` from the `\programs` folder
+4. Select `output.nc` from the `/programs` folder
 
 
 
