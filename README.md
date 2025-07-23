@@ -23,7 +23,7 @@ npm start
 ```
 3. In `UR_Demo_Webcam_Drawing_webUi/backend/pages/api/send-to-robot.js` change `const ROBOT_IP = '192.168.1.160';` to the IP address of the robot you are connecting to. 
 
-4. The WebUI should be hosted on `localhost:3000` on your browser.
+4. The WebUI should be hosted on `localhost:3001` on your browser.
 
 5. Use WebUI to take a picture with the device camera, or upload a picture. Click `Save GCode`, then `Process Edges`, then `Send to Robot`
 buttons. 
