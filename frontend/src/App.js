@@ -787,6 +787,7 @@ function App() {
           {/* Action Buttons Row */}
           <Box sx={{ mt: 3, textAlign: "center" }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+              {/*
               <StyledTextField
                 label="Enter Name (Optional)"
                 value={userName}
@@ -804,6 +805,7 @@ function App() {
                 }
                 label="Draw Name Below Image"
               />
+              */}
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
               <StyledButton

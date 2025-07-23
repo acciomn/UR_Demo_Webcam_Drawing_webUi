@@ -10,6 +10,8 @@ export default async function handler(req, res) {
     }
 
     const filename = "output.nc";
+    // CHANGE THIS to match your robot's IP address
+    // Example: const ROBOT_IP = '192.168.1.100';
     const ROBOT_IP = '192.168.1.160';
     const FTP_USER = 'root';
     const FTP_PASS = 'easybot';
