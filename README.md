@@ -1,44 +1,55 @@
-UR Demo Webcam Drawing WebUI
-Web-based application for real-time edge detection using a webcam or uploaded images. Outputs include processed images, SVG files, and GCode files.
+﻿# Face Drawing Robot Demo Setup Guide
 
-Quick Setup
-1. Prerequisites
-Ensure you have the following installed:
+This guide walks you through setting up and running the Face Drawing Robot Demo locally.
+---
+## 🛠️ Prerequisites
 
-Node.js
-Python 3.8+
+- `Node.js` and `npm` installed
 
-2. Clone the Repository
+- Two terminal windows or tabs
+	- Windows Subsystem for Linux (WSL) was used for development 
 
-git clone "repository url"
-cd UR_Demo_Webcam_Drawing_webUi
+- Laptop connected to robot with ethernet
 
-4. Start the Frontend
-   
-Navigate to the frontend folder:
+- URCap: `Remote TCP & Toolpath` installed on robot
 
-cd frontend
-Install dependencies:
+---
+## 📦 Backend Setup
+
+1. Open a terminal and navigate to the `backend` folder:
+
+```bash
+cd UR_Demo_Webcam_Drawing_webUi/backend
 npm install
-
-5. Start the Backend
-   
-Navigate to the backend folder:
-
-cd ../backend
-
-Install Python dependencies:
-
-pip install -r requirements.txt
-
-Run the backend server:
-
 npm run dev
+```
 
-The backend will run at: http://localhost:3000
+2. Open a second terminal and navigate to the `frontend` folder
 
-7. Start the Frontend React app:
-
+```bash
+cd UR_Demo_Webcam_Drawing_webUi/frontend
+npm install
 npm start
-Open your browser and visit: http://localhost:3001
+```
+
+3. In `UR_Demo_Webcam_Drawing_webUi/backend/pages/api/send-to-robot.js` change `const ROBOT_IP = '192.168.1.160';` to the IP address of the robot you are connecting to. 
+
+4. The WebUI should be hosted on `localhost:3000` on your browser.
+
+5. Use WebUI to take a picture with the device camera, or upload a picture. Click `Save GCode`, then `Process Edges`, then `Send to Robot`
+buttons. 
+
+6. `output.nc` file should appear in robot's `/programs` file. 
+
+## 🤖 Robot Setup
+
+1. Make a simple program on the robot. Add a toolpath from the URCap `Remote TCP & Toolpath`
+
+2. Create a feature plane of the drawing plane
+
+3. Teach TCP of drawing tool
+
+4. Select `output.nc` from the `\programs` folder
+
+
 
