@@ -1,6 +1,9 @@
 ﻿# Face Drawing Robot Demo Setup Guide
 Created by Jasmin Marwad (jama@universal-robots.com)
 
+
+![draw_demo](https://github.com/user-attachments/assets/a5beb49e-1244-4066-aed1-b39ba6fbe4ee)
+
 This guide walks you through setting up and running the Face Drawing Robot Demo locally.
 ---
 ## 🛠️ Prerequisites
